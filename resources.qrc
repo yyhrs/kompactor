@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="3263827.gif">resources/3263827.gif</file>
+        <file alias="kompactor.png">resources/kompactor.png</file>
+    </qresource>
+</RCC>

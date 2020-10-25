@@ -1,0 +1,25 @@
+IDI_ICON1               ICON    DISCARDABLE     "Kompactor.ico"
+
+1 VERSIONINFO
+FILEVERSION 1,0,0,0
+FILEOS 0x4
+FILETYPE 0x0
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904B0"
+    BEGIN
+      VALUE "CompanyName", "Shrademn'Company"
+      VALUE "FileDescription", "Kompactor"
+      VALUE "InternalName", "Kompactor"
+      VALUE "LegalCopyright", ""
+      VALUE "OriginalFilename", "Kompactor.exe"
+      VALUE "ProductName", "Kompactor"
+    END
+  END 
+  
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x0409, 0x04B0
+  END
+END
