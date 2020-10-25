@@ -11,37 +11,46 @@
 #include "assets/Files.h"
 #include "Kompactor.hpp"
 
-Kompactor::Kompactor(const QFileInfo &input, const QFileInfo &output, int vertexPrecision, int normalPrecision):
+Kompactor::Kompactor(const QFileInfo &input, const QFileInfo &output, int vertexPrecision, int normalPrecision, const QStringList &shaders):
 	m_input{input},
 	m_output{output},
 	m_vertexPrecision{vertexPrecision},
-	m_normalPrecision{normalPrecision}
+	m_normalPrecision{normalPrecision},
+	m_shaders{shaders}
 {
 }
 
 QList<Kompactor::Report> Kompactor::excute()
 {
-	QList<Report>     reports;
-	ptr<Alamo::IFile> in{new Alamo::PhysicalFile(m_input.absoluteFilePath().toStdWString())};
-	Alamo::Model      model{in};
-	QFile             fileIn{m_input.absoluteFilePath()};
-	QFile             fileOut{m_output.absoluteFilePath()};
+	QList<Report> reports;
 
-	if (!fileIn.open(QFile::ReadOnly) || !fileOut.open(QFile::WriteOnly | QFile::Truncate))
-		return {};
-	for (const auto &entryPoint: model.shadowEntryPoints())
+	try
 	{
-		const auto                   &subMesh{model.GetMesh(entryPoint.mesh).subMeshes[entryPoint.submesh]};
-		Buffer<Alamo::MASTER_VERTEX> vertices;
-		Buffer<uint16_t>             indices;
+		ptr<Alamo::IFile> in{new Alamo::PhysicalFile(m_input.absoluteFilePath().toStdWString())};
+		Alamo::Model      model{in, m_shaders};
+		QFile             fileIn{m_input.absoluteFilePath()};
+		QFile             fileOut{m_output.absoluteFilePath()};
 
-		rebuildShadow(subMesh, vertices, indices);
-		writeShadow(fileIn, fileOut, model, entryPoint, vertices, indices);
-		reports << Report{QString::fromStdString(subMesh.mesh->name), subMesh.vertices.size(), vertices.size(), subMesh.indices.size() / 3, indices.size() / 3};
+		if (!fileIn.open(QFile::ReadOnly) || !fileOut.open(QFile::WriteOnly | QFile::Truncate))
+			return {};
+		for (const auto &entryPoint: model.shadowEntryPoints())
+		{
+			const auto                   &subMesh{model.GetMesh(entryPoint.mesh).subMeshes[entryPoint.submesh]};
+			Buffer<Alamo::MASTER_VERTEX> vertices;
+			Buffer<uint16_t>             indices;
+
+			rebuildShadow(subMesh, vertices, indices);
+			writeShadow(fileIn, fileOut, model, entryPoint, vertices, indices);
+			reports << Report{QString::fromStdString(subMesh.mesh->name), subMesh.vertices.size(), vertices.size(), subMesh.indices.size() / 3, indices.size() / 3};
+		}
+		fileOut.write(fileIn.readAll());
+		fileIn.close();
+		fileOut.close();
 	}
-	fileOut.write(fileIn.readAll());
-	fileIn.close();
-	fileOut.close();
+	catch (...)
+	{
+		reports << Report{m_input.fileName(), 0, 0, 0, 0};
+	}
 	return reports;
 }
 
@@ -86,7 +95,7 @@ void Kompactor::rebuildShadow(const Alamo::Model::SubMesh &subMesh, Buffer<Alamo
 	}
 }
 
-void Kompactor::writeShadow(QFile &fileIn, QFile &fileOut, Alamo::Model &model, const Alamo::Model::ShadowEntryPoint &entryPoint, Buffer<Alamo::MASTER_VERTEX> &vertices, Buffer<uint16_t> &indices)
+void Kompactor::writeShadow(QFile &fileIn, QFile &fileOut, Alamo::Model &model, const Alamo::Model::ShaderEntryPoint &entryPoint, Buffer<Alamo::MASTER_VERTEX> &vertices, Buffer<uint16_t> &indices)
 {
 	const auto &subMesh{model.GetMesh(entryPoint.mesh).subMeshes[entryPoint.submesh]};
 	auto       difference{(subMesh.vertices.size() - vertices.size()) * sizeof(Alamo::MASTER_VERTEX) + (subMesh.indices.size() - indices.size()) * sizeof(uint16_t)};

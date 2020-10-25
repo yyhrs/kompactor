@@ -13,7 +13,7 @@ namespace Alamo
 	class Model: public IObject
 	{
 public:
-		struct ShadowEntryPoint
+		struct ShaderEntryPoint
 		{
 			int    mesh{0};
 			int    submesh{0};
@@ -121,7 +121,8 @@ private:
 		std::vector<Proxy>      m_proxies;
 		std::vector<Dazzle>     m_dazzles;
 		size_t                  m_numSubMeshes;
-		QList<ShadowEntryPoint> m_shadowEntryPoints;
+		QStringList             m_shaders;
+		QList<ShaderEntryPoint> m_shaderEntryPoints;
 		QList<int>              m_meshesEntryPoints;
 
 public:
@@ -167,12 +168,12 @@ public:
 		{
 			return m_meshesEntryPoints;
 		}
-		inline QList<ShadowEntryPoint> shadowEntryPoints() const
+		inline QList<ShaderEntryPoint> shadowEntryPoints() const
 		{
-			return m_shadowEntryPoints;
+			return m_shaderEntryPoints;
 		}
 
-		Model(ptr<IFile> file);
+		Model(ptr<IFile> file, const QStringList &shaders);
 		~Model();
 
 	};

@@ -60,7 +60,7 @@ namespace Alamo
 
 	void Model::ReadSubMesh(ChunkReader&reader, SubMesh&mesh, size_t number)
 	{
-		ShadowEntryPoint entryPoint;
+		ShaderEntryPoint entryPoint;
 
 		Verify(reader.next() == 0x10100);
 
@@ -171,11 +171,11 @@ namespace Alamo
 			type = reader.next();
 		}
 		Verify(type == -1);
-		if (mesh.shader == "MeshShadowVolume.fx")
+		if (m_shaders.contains(QString::fromStdString(mesh.shader)))
 		{
 			entryPoint.mesh = m_meshes.size() - 1;
 			entryPoint.submesh = number;
-			m_shadowEntryPoints << entryPoint;
+			m_shaderEntryPoints << entryPoint;
 		}
 	}
 
@@ -345,7 +345,9 @@ namespace Alamo
 		Verify(reader.next() == -1);
 	}
 
-	Model::Model(ptr<IFile> file): m_numSubMeshes(0)
+	Model::Model(ptr<IFile> file, const QStringList &shaders):
+		m_numSubMeshes(0),
+		m_shaders{shaders}
 	{
 		ChunkReader reader(file);
 		ReadSkeleton(reader);

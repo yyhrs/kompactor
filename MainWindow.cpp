@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent):
 	outputPathLineEdit->setText(m_settings.value(OutputPath).toString());
 	vertexPrecisionComboBox->setCurrentIndex(m_settings.value(VertexPrecision, vertexPrecisionComboBox->currentIndex()).toInt());
 	normalPrecisionComboBox->setCurrentIndex(m_settings.value(NormalPrecision, normalPrecisionComboBox->currentIndex()).toInt());
+	m_settings.restoreValues(Shaders, listWidget, {"MeshShadowVolume.fxo"});
 }
 
 MainWindow::~MainWindow()
@@ -56,6 +57,7 @@ MainWindow::~MainWindow()
 	m_settings.setValue(OutputPath, outputPathLineEdit->text());
 	m_settings.setValue(VertexPrecision, vertexPrecisionComboBox->currentIndex());
 	m_settings.setValue(NormalPrecision, normalPrecisionComboBox->currentIndex());
+	m_settings.saveValues(Shaders, listWidget);
 }
 
 void MainWindow::connectWidgets()
@@ -78,16 +80,25 @@ void MainWindow::connectWidgets()
 	});
 	connect(progressBar, &ProgressBarButton::clicked, [this]
 	{
+		QStringList shaders;
+
+		for (int index = 0; index < listWidget->count(); ++index)
+		{
+			QFileInfo shader{listWidget->item(index)->text()};
+
+			if (shader.suffix() == "fxo")
+				shaders << shader.baseName() + ".fx";
+		}
 		settingsGroupBox->setDisabled(true);
 		stackedWidget->setCurrentIndex(0);
-		reportWidget->flush();
 		m_3263827.start();
+		reportWidget->flush();
 		m_files = getFiles(inputPathLineEdit->text());
 		QDir{}.mkpath(QFileInfo{outputPathLineEdit->text()}.absoluteFilePath());
 		qDebug() << m_files;
-		m_watcher.setFuture(QtConcurrent::map(m_files, [this](const QFileInfo &file)
+		m_watcher.setFuture(QtConcurrent::map(m_files, [this, shaders](const QFileInfo &file)
 		{
-			Kompactor kompactor{file, outputPathLineEdit->text() / file.fileName(), vertexPrecisionComboBox->currentData().toInt(), normalPrecisionComboBox->currentData().toInt()};
+			Kompactor kompactor{file, outputPathLineEdit->text() / file.fileName(), vertexPrecisionComboBox->currentData().toInt(), normalPrecisionComboBox->currentData().toInt(), shaders};
 
 			emit reportsReceived(file, kompactor.excute());
 		}));
@@ -111,8 +122,6 @@ void MainWindow::connectWidgets()
 		{
 			QVariantList description;
 
-			QList{File, OldFileSize, NewFileSize, MeshName, OldVertexNumber, NewVertexNumber, OldFaceNumber, NewFaceNumber};
-
 			description << file.baseName()
 						<< file.size() / 1000000.
 						<< newFile.size() / 1000000.
@@ -121,7 +130,10 @@ void MainWindow::connectWidgets()
 						<< report.newVerticesNumber
 						<< report.oldFaceNumber
 						<< report.newFaceNumber;
-			descriptions << description;
+			if (report.name == file.fileName())
+				reportWidget->addLog(LogWidget::Warning, file.baseName(), description);
+			else
+				descriptions << description;
 		}
 		reportWidget->addLogs(LogWidget::Information, file.baseName(), descriptions);
 	});

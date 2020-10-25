@@ -18,8 +18,103 @@
     <normaloff>:/kompactor.png</normaloff>:/kompactor.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="2" column="0" colspan="2">
+   <layout class="QGridLayout" name="gridLayout" rowstretch="1,3,0">
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="pathGroupBox">
+      <property name="title">
+       <string>Path</string>
+      </property>
+      <layout class="QFormLayout" name="formLayout">
+       <property name="labelAlignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="inputPushButton">
+         <property name="text">
+          <string>Input</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="PathLineEdit" name="inputPathLineEdit">
+         <property name="placeholderText">
+          <string>Input folder poath</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="outputPushButton">
+         <property name="text">
+          <string>Output</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="PathLineEdit" name="outputPathLineEdit">
+         <property name="placeholderText">
+          <string>Output folder path</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QGroupBox" name="settingsGroupBox">
+      <property name="title">
+       <string>Settings</string>
+      </property>
+      <layout class="QFormLayout" name="formLayout_2">
+       <property name="labelAlignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <item row="0" column="0">
+        <widget class="QLabel" name="vertexPrecisionLabel">
+         <property name="text">
+          <string>Vertex Precision</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="vertexPrecisionComboBox"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="normalPrecisionLabel">
+         <property name="text">
+          <string>Normal Precision</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="normalPrecisionComboBox"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="PathListWidget" name="listWidget">
+         <property name="contextMenuPolicy">
+          <enum>Qt::ActionsContextMenu</enum>
+         </property>
+         <property name="acceptDrops">
+          <bool>true</bool>
+         </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="textElideMode">
+          <enum>Qt::ElideLeft</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Sharders</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
        <number>0</number>
@@ -77,76 +172,7 @@
       </widget>
      </widget>
     </item>
-    <item row="0" column="0">
-     <widget class="QGroupBox" name="pathGroupBox">
-      <property name="title">
-       <string>Path</string>
-      </property>
-      <layout class="QFormLayout" name="formLayout">
-       <property name="labelAlignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="inputPushButton">
-         <property name="text">
-          <string>Input</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="PathLineEdit" name="inputPathLineEdit">
-         <property name="placeholderText">
-          <string>Input folder poath</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="outputPushButton">
-         <property name="text">
-          <string>Output</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="PathLineEdit" name="outputPathLineEdit">
-         <property name="placeholderText">
-          <string>Output folder path</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QGroupBox" name="settingsGroupBox">
-      <property name="title">
-       <string>Settings</string>
-      </property>
-      <layout class="QFormLayout" name="formLayout_2">
-       <item row="0" column="0">
-        <widget class="QLabel" name="vertexPrecisionLabel">
-         <property name="text">
-          <string>Vertex Precision</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="vertexPrecisionComboBox"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="normalPrecisionLabel">
-         <property name="text">
-          <string>Normal Precision</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QComboBox" name="normalPrecisionComboBox"/>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="3" column="0" colspan="2">
+    <item row="2" column="0" colspan="2">
      <widget class="ProgressBarButton" name="progressBar">
       <property name="enabled">
        <bool>false</bool>
@@ -180,6 +206,11 @@
    <class>LogWidget</class>
    <extends>QTableView</extends>
    <header>LogWidget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>PathListWidget</class>
+   <extends>QListWidget</extends>
+   <header>PathListWidget.hpp</header>
   </customwidget>
  </customwidgets>
  <resources>

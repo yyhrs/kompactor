@@ -39,7 +39,8 @@ public:
 		InputPath,
 		OutputPath,
 		VertexPrecision,
-		NormalPrecision
+		NormalPrecision,
+		Shaders
 	};
 	Q_ENUM(SettingsKey)
 

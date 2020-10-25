@@ -10,7 +10,6 @@ TARGET = Kompactor
 TEMPLATE = app
 
 CONFIG += c++17
-CONFIG += static
 RC_FILE = details.rc
 
 DESTDIR = $$PWD/bin

@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QDrag>
 #include <QDropEvent>
+#include <QFileDialog>
 #include <QFileSystemModel>
 #include <QMimeData>
 #include <QPainter>
@@ -21,10 +22,14 @@ PathListWidget::PathListWidget(QWidget *parent): QListWidget{parent}
 	m_actions[Add] = new QAction{QIcon::fromTheme("add"), "Add", this};
 	m_actions[Remove] = new QAction{QIcon::fromTheme("remove"), "Remove", this};
 	addActions(m_actions.values());
+	connect(m_actions[Add], &QAction::triggered, [this]
+	{
+		addItem(QFileDialog::getOpenFileName(this));
+	});
 	connect(m_actions[Remove], &QAction::triggered, [this]
 	{
-		auto		indexes{selectionModel()->selectedRows()};
-		QList<int>	rows;
+		auto        indexes{selectionModel()->selectedRows()};
+		QList<int>  rows;
 
 		for (const auto &index: indexes)
 			rows << index.row();
@@ -46,10 +51,10 @@ void PathListWidget::setBehaviour(Behaviour behaviour)
 }
 void PathListWidget::addItem(const QString &path)
 {
-	QFileSystemModel	model;
-	auto				addPath{[this, &model](const QString &path)
+	QFileSystemModel model;
+	auto             addPath{[this, &model](const QString &path)
 		{
-			int	row{count()};
+			int row{count()};
 
 			QListWidget::addItem(QDir::toNativeSeparators(path));
 			item(row)->setIcon(model.fileIcon(model.index(path)));
@@ -74,7 +79,7 @@ void PathListWidget::addItem(const QString &path)
 
 QMimeData *PathListWidget::mimeData(const QList<QListWidgetItem *> items) const
 {
-	auto		*mimeData{new QMimeData};
+	auto        *mimeData{new QMimeData};
 	QList<QUrl> urls;
 
 	for (const auto &item: items)
